@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -10,41 +11,9 @@
 </head>
 <body>
     <div>
-    Lobby : [[${id}]]
-        <div id="allNumber"></div>
+        <div th:each="room : ${roomList}">
+            <a th:href="'/gamer/join?roomId=' + ${room.getId()}">[[${room.roomName}]]</a>
+        </div>
     </div>
-
-    <script>
-        var socket = new SockJS('/streams-websocket');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/subscribe/[[${id}]]', function (response) {
-                let message = JSON.parse(response.body).content;
-                console.log("Value: " + message);
-                $("#receive").append("<tr><td>" + message + "</td></tr>");
-            });
-
-            stompClient.subscribe('/topic/subscribe/allNumber', function (response) {
-                let message1 = JSON.parse(response.body).content;
-                $("#allNumber").append("<tr><td>" + message1 + "</td></tr>")
-            });
-        });
-
-        function sendMessage() {
-            var parameters = {};
-            parameters.message = $("#name").val();
-            var url = "/http/sendMessage";
-            $.ajax({type:"GET", url:url, data:$.param(parameters), cache:false, async:false});
-            $("#name").val("");
-        }
-
-        $(function () {
-            $("form").on('submit', function (e) {
-                e.preventDefault();
-            });
-            $( "#send" ).click(function() { sendMessage(); });
-        });
-    </script>
 </body>
 </html>

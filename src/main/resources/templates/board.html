@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <title>Lobby</title>
+
+    <style>
+        div {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            room
+        </div>
+
+        <div>
+            room1
+        </div>
+    </div>
+
+    <script>
+        var socket = new SockJS('/streams-websocket');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/subscribe/chunppo', function (response) {
+                console.log(response);
+                let message = JSON.parse(response.body).content;
+                console.log("Value: " + message);
+                $("#receive").append("<tr><td>" + message + "</td></tr>");
+            });
+
+            stompClient.subscribe('/topic/subscribe/allNumber', function (response) {
+                let message1 = JSON.parse(response.body).content;
+                $("#allNumber").append("<tr><td>" + message1 + "</td></tr>")
+            });
+        });
+    </script>
+</body>
+</html>
